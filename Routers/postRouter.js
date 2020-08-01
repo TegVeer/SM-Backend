@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const Post = require("../Models/postModel");
 const User = require("../Models/userModel");
+const { serverUrl } = require("../Constants/Config");
 
 //! Fetching Post
 router.get("/", (req, res, next) => {
@@ -53,7 +54,7 @@ router.post("/", (req, res, next) => {
   const mediaList = [];
 
   for (let media of mediaUri) {
-    mediaList.push(`http://192.168.31.208:5000/${media}`);
+    mediaList.push(`${serverUrl}/${media}`);
   }
 
   const post = new Post({
