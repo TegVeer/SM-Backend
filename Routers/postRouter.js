@@ -5,9 +5,16 @@ const Post = require("../Models/postModel");
 const User = require("../Models/userModel");
 const { serverUrl } = require("../Constants/Config");
 
+//* Post Types
+const MEDIAPOST = "MEDIAPOST";
+const POLLINGPOST = "POLLINGPOST";
+const MENTIONEDPOST = "MENTIONEDPOST";
+const TOURPOST = "TOURPOST";
+
 //! Fetching Post
 router.get("/", (req, res, next) => {
   Post.find()
+    .populate("userId")
     .exec()
     .then((result) => {
       res.status(201).json(result);
@@ -50,20 +57,55 @@ router.get("/likedPost/:userId", (req, res, next) => {
 });
 //! Creating Post
 router.post("/", (req, res, next) => {
-  const mediaUri = req.body.postMedia;
+  //Fields Constants
+
+  const {
+    userId,
+    postType,
+    postText,
+    postMedia,
+    mentionedPostId,
+    likes,
+    shares,
+    comments,
+    parentPostId,
+    publishedTime,
+    edited,
+  } = req.body;
+
+  switch (postType) {
+    case MEDIAPOST: {
+      // Code for MEDIA POST
+    }
+    case POLLINGPOST: {
+      //Code for POLLING POST
+    }
+    case MENTIONEDPOST: {
+      //Code for MENTIONED POST
+    }
+    case TOURPOST: {
+      //Code for TOUR POST
+    }
+    default: {
+      res.status(201).json({ error: "Post Type cannot be dettermined" });
+    }
+  }
+  //Buffer Variables
   const mediaList = [];
 
-  for (let media of mediaUri) {
+  for (let media of postMedia) {
     mediaList.push(`${serverUrl}/${media}`);
   }
 
   const post = new Post({
     _id: new mongoose.Types.ObjectId(),
-    userId: req.body.userId,
-    postType: req.body.postType,
-    postText: req.body.postText,
-    postMedia: mediaList,
-    mentionedPostId: req.body.mentionedPostId,
+    userId,
+    postType,
+    postText,
+    postMedia,
+    mentionedPostId,
+    parentPostId,
+    publishedTime: Date.now(),
   });
 
   post
@@ -232,4 +274,8 @@ router.post("/like", (req, res, next) => {
       console.log(error);
     });
 });
+
+//! Polling Post
+router.post("/poll", ((req, res, next) = {}));
+
 module.exports = router;
