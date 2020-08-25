@@ -64,6 +64,7 @@ router.post("/", (req, res, next) => {
     postType,
     postText,
     postMedia,
+    pollingData,
     mentionedPostId,
     likes,
     shares,
@@ -73,41 +74,71 @@ router.post("/", (req, res, next) => {
     edited,
   } = req.body;
 
+  let post;
+
   switch (postType) {
     case MEDIAPOST: {
-      // Code for MEDIA POST
+      //Buffer Variables
+      const mediaList = [];
+
+      for (let media of postMedia) {
+        mediaList.push(`${serverUrl}/${media}`);
+      }
+      post = new Post({
+        _id: new mongoose.Types.ObjectId(),
+        userId,
+        postType,
+        postText,
+        postMedia,
+        mentionedPostId,
+        parentPostId,
+        publishedTime: Date.now(),
+      });
+      break;
     }
     case POLLINGPOST: {
-      //Code for POLLING POST
+      console.log("PolingFormat");
+      post = new Post({
+        _id: new mongoose.Types.ObjectId(),
+        userId,
+        postType,
+        postText,
+        parentPostId,
+        publishedTime: Date.now(),
+        pollingData,
+      });
+      break;
     }
     case MENTIONEDPOST: {
-      //Code for MENTIONED POST
+      post = new Post({
+        _id: new mongoose.Types.ObjectId(),
+        userId,
+        postType,
+        postText,
+        mentionedPostId,
+        parentPostId,
+        publishedTime: Date.now(),
+        //Polling Data
+      });
+      break;
     }
     case TOURPOST: {
-      //Code for TOUR POST
+      post = new Post({
+        _id: new mongoose.Types.ObjectId(),
+        userId,
+        postType,
+        postText,
+        parentPostId,
+        publishedTime: Date.now(),
+        //Maps Data
+      });
+      break;
     }
     default: {
       res.status(201).json({ error: "Post Type cannot be dettermined" });
     }
   }
-  //Buffer Variables
-  const mediaList = [];
-
-  for (let media of postMedia) {
-    mediaList.push(`${serverUrl}/${media}`);
-  }
-
-  const post = new Post({
-    _id: new mongoose.Types.ObjectId(),
-    userId,
-    postType,
-    postText,
-    postMedia,
-    mentionedPostId,
-    parentPostId,
-    publishedTime: Date.now(),
-  });
-
+  // console.log(post);
   post
     .save()
     .then((result) => {
@@ -274,8 +305,5 @@ router.post("/like", (req, res, next) => {
       console.log(error);
     });
 });
-
-//! Polling Post
-router.post("/poll", ((req, res, next) = {}));
 
 module.exports = router;

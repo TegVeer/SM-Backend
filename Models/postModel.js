@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 
+const pollingOption = mongoose.Schema(
+  {
+    option: { type: String },
+    votes: { type: Number },
+  },
+  { _id: false }
+);
+
 const postSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   userId: { type: mongoose.Schema.Types.ObjectId, require: true, ref: "User" },
@@ -10,6 +18,10 @@ const postSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Post",
     default: null,
+  },
+  pollingData: {
+    totalVotes: { type: Number, default: 0 },
+    options: [{ type: pollingOption }],
   },
   // Other Feilds
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
